@@ -1,0 +1,68 @@
+# Aliases Pack Start
+hlp(){
+#- This Help Command
+  if [ "$1x" != 'x' ]; then
+    # Process help of certain file
+    echo "Aliases Help";
+    echo "#Processing: $1"
+    filenamestr=$(find ~/aliaspak -name "alias_$1")
+    echo "Help for $filenamestr"
+    if [ -f "$filenamestr" ]; then
+      cat $filenamestr | grep "()\|#-";
+      cat $filenamestr | grep "alias" | awk 'i=index($0, "alias") {print substr($0, i+5)}' | more;
+    else
+      echo "File $filenamestr not found!!"
+    fi
+  else
+    # Process help of all files as to be on source folder
+    # because home does have more files
+    for file in ~/aliaspak/alias_*
+    do
+      filename=$( basename "$file" )
+      if [ ${filename} != 'alias_pack' ]; then
+        echo "\n#Processing: $file"
+        cat $file | grep "()\|#-";
+        cat $file | grep "alias" | awk 'i=index($0, "alias") {print substr($0, i+5)}' | more;
+      fi
+    done
+    echo "\n\n################################";
+    echo "General Help";
+    echo "For Specific alias help type hlp and the corresponding:";
+    find ~/aliaspak/. -name "alias_*" | sed 's/.*\///';
+  fi
+
+}
+
+# Source depending on os
+echo "#Sourcing: alias_general"
+source ~/aliaspak/alias_general
+unameOut="$(uname -s)"
+case "${unameOut}" in
+    Linux*)
+      machine=Linux
+      echo "#Sourcing: alias_linux"
+      source ~/aliaspak/alias_linux
+      echo "#Sourcing: alias_git"
+      source ~/aliaspak/alias_git
+    ;;
+    Darwin*)
+      machine=Mac
+      echo "#Sourcing: alias_mac"
+      source ~/aliaspak/alias_mac
+      echo "#Sourcing: alias_docker"
+      source ~/aliaspak/alias_docker
+      echo "#Sourcing: alias_git"
+      source ~/aliaspak/alias_git
+    ;;
+    CYGWIN*)
+      machine=Cygwin;;
+    MINGW*)
+       machine=MinGw;;
+    *)
+       machine="UNKNOWN:${unameOut}"
+esac
+echo ${machine}
+
+
+
+#history | awk '{CMD[$2]++;count++;}END { for (a in CMD)print CMD[a] " " CMD[a]/count*100 "% " a;}' | grep -v "./" | column -c3 -s " " -t | sort -nr | nl |  head -n10

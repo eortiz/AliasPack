@@ -1,0 +1,319 @@
+################################-
+#- DOCKER Aliases
+################################-
+
+################################-
+#- COMPOSE LIFECYCLE
+################################-
+alias dup='echo "Docker compose up: docker compose up";docker compose up'
+alias dupb='echo "Docker compose up with build: docker compose up --build";docker compose up --build'
+alias dupd='echo "Docker compose up detached: docker compose up -d";docker compose up -d'
+alias dupbd='echo "Docker compose up build detached: docker compose up --build -d";docker compose up --build -d'
+alias ddn='echo "Docker compose down: docker compose down";docker compose down'
+alias ddnv='echo "Docker compose down remove volumes: docker compose down -v";docker compose down -v'
+
+drec() {
+#- Recreate containers: docker compose up -d --force-recreate
+    echo "Docker compose recreate: docker compose up -d --force-recreate"
+    docker compose up -d --force-recreate
+}
+drem() {
+#- Remove stopped compose services: docker compose rm -f
+    echo "Docker compose remove stopped: docker compose rm -f"
+    docker compose rm -f
+}
+dbu() {
+#- Docker compose build service by name
+   if [ "$1x" != 'x' ]; then
+     echo "Docker compose build $1: docker compose build $1"
+     docker compose build $1
+   else
+     echo "Usage: dbu [SERVICE] name of the service to build"
+   fi
+}
+dcres() {
+#- Docker compose restart service or all
+   if [ "$1x" != 'x' ]; then
+     echo "Docker compose restart $1: docker compose restart $1"
+     docker compose restart $1
+   else
+     echo "Docker compose restart all: docker compose restart"
+     docker compose restart
+   fi
+}
+
+################################-
+#- COMPOSE LOGS & STATUS
+################################-
+alias dcps='echo "Docker compose process list: docker compose ps";docker compose ps'
+alias dcpsa='echo "Docker compose process list all: docker compose ps -a";docker compose ps -a'
+alias dcl='echo "Docker compose logs follow: docker compose logs -f";docker compose logs -f'
+alias dccfg='echo "Docker compose validate config: docker compose config";docker compose config'
+
+dclog() {
+#- Docker compose logs for specific service
+   if [ "$1x" != 'x' ]; then
+     echo "Docker compose logs $1: docker compose logs -f $1"
+     docker compose logs -f $1
+   else
+     echo "Usage: dclog [SERVICE] name of the service"
+   fi
+}
+dcex() {
+#- Docker compose exec into a running service
+   if [ "$1x" != 'x' ]; then
+     echo "Docker compose exec $1: docker compose exec $1 bash"
+     docker compose exec $1 bash
+   else
+     echo "Usage: dcex [SERVICE] name of the running service"
+   fi
+}
+
+################################-
+#- CONTAINER LIST & STATUS
+################################-
+alias dps='echo "Docker process list running: docker ps";docker ps'
+alias dpsa='echo "Docker process list all: docker ps -a";docker ps -a'
+
+dstat() {
+#- Docker container resource usage stats
+     echo "Docker stats: docker stats \$(docker ps -q)"
+     docker stats $(docker ps -q)
+}
+dlog() {
+#- Docker container logs by name (follow)
+   if [ "$1x" != 'x' ]; then
+     echo "Docker logs $1: docker logs -f $1"
+     docker logs -f $1
+   else
+     echo "Usage: dlog [NAME] name of the container"
+   fi
+}
+dins() {
+#- Docker inspect container by name
+   if [ "$1x" != 'x' ]; then
+     echo "Docker inspect $1: docker inspect $1"
+     docker inspect $1
+   else
+     echo "Usage: dins [NAME] name of the container"
+   fi
+}
+dtop() {
+#- Docker top processes in container
+   if [ "$1x" != 'x' ]; then
+     echo "Docker top $1: docker top $1"
+     docker top $1
+   else
+     echo "Usage: dtop [NAME] name of the container"
+   fi
+}
+
+################################-
+#- CONTAINER START / STOP / RESTART
+################################-
+dsta() {
+#- Docker start container by name
+   if [ "$1x" != 'x' ]; then
+     echo "Docker start $1: docker start \$(docker ps -aq -f name=$1)"
+     docker start $(docker ps -aq -f "name=$1")
+   else
+     echo "Usage: dsta [NAME] name of the container to start"
+   fi
+}
+dres() {
+#- Docker restart container by name
+   if [ "$1x" != 'x' ]; then
+     echo "Docker restart $1: docker restart \$(docker ps -q -f name=$1)"
+     docker ps -a -f "name=$1"
+     docker restart $(docker ps -q -f "name=$1")
+   else
+     echo "Usage: dres [NAME] name of the container to restart"
+   fi
+}
+dsto() {
+#- Docker stop ALL running containers (no arguments)
+   if [ "$1x" != 'x' ]; then
+     echo "dsto takes no arguments. To stop by name use: dnamestop [NAME]"
+   else
+     echo "Docker stop all: docker stop \$(docker ps -a -q)"
+     docker stop $(docker ps -a -q)
+   fi
+}
+dnamestop() {
+#- Docker stop container(s) by name pattern
+   if [ "$1x" != 'x' ]; then
+     echo "\n# STOPPING containers matching: $1"
+     echo "docker stop \$(docker ps -q -f name=$1)"
+     docker ps -f "name=$1"
+     docker stop $(docker ps -q -f "name=$1")
+     echo "# Stop completed."
+   else
+     echo "Usage: dnamestop [NAME] name pattern of containers to stop"
+   fi
+}
+
+################################-
+#- CONTAINER EXEC & INTERACT
+################################-
+dex() {
+#- Docker exec interactive bash in container
+   if [ "$1x" != 'x' ]; then
+     echo "Docker exec $1: docker exec -it $1 bash"
+     docker exec -it $1 bash
+   else
+     echo "Usage: dex [NAME] name of the running container"
+   fi
+}
+dexsh() {
+#- Docker exec interactive sh (alpine/minimal images)
+   if [ "$1x" != 'x' ]; then
+     echo "Docker exec sh $1: docker exec -it $1 sh"
+     docker exec -it $1 sh
+   else
+     echo "Usage: dexsh [NAME] name of the running container"
+   fi
+}
+dcp() {
+#- Docker cp files between host and container
+   if [ "$1x" != 'x' ] && [ "$2x" != 'x' ]; then
+     echo "Docker cp: docker cp $1 $2"
+     docker cp $1 $2
+   else
+     echo "Usage: dcp [SRC] [DST]"
+     echo "  Host to container: dcp ./file.txt container:/path/"
+     echo "  Container to host: dcp container:/path/file.txt ./"
+   fi
+}
+
+################################-
+#- CONTAINER REMOVE
+################################-
+drm() {
+#- Docker remove container by name or all stopped
+   if [ "$1x" != 'x' ]; then
+     if [ "$1" != 'all' ]; then
+        echo "\n REMOVING CONTAINER $1"
+        echo "docker rm -f \$(docker ps -aq -f name=$1)"
+        docker rm -f $(docker ps -a -q -f "name=$1")
+     else
+        echo "\n REMOVING ALL stopped containers"
+        echo "docker rm \$(docker ps -a -q)"
+        docker rm $(docker ps -a -q)
+     fi
+   else
+    echo "Remove containers"
+    echo "Usage: drm [NAME] to remove by name or drm all to remove all stopped"
+   fi
+}
+
+################################-
+#- IMAGES
+################################-
+alias dpull='echo "Docker pull image: docker pull";docker pull'
+
+dils() {
+#- Docker image list, optionally filter by pattern
+   if [ "$1x" != 'x' ]; then
+    echo "Docker images matching $1: docker images -a | grep $1"
+    docker images -a | grep "$1"
+   else
+    echo "Docker images: docker images"
+    docker images
+    echo "Filter: dils [PATTERN] | Delete: didel [ID] or didel all"
+   fi
+}
+didel() {
+#- Docker image delete by ID or all
+   if [ "$1x" != 'x' ]; then
+     if [ "$1" != 'all' ]; then
+        echo "\n DELETING IMAGE $1: docker rmi -f $1"
+        docker rmi -f $1
+     else
+        echo "\n DELETING ALL images: docker rmi -f \$(docker images -q)"
+        docker rmi -f $(docker images -q)
+     fi
+   else
+    echo "Delete images"
+    echo "Usage: didel [ID] to delete by ID or didel all to delete all images"
+   fi
+}
+didelpat() {
+#- Docker image delete by name pattern
+   if [ "$1x" != 'x' ]; then
+    echo "Deleting images matching $1: docker images -a | grep $1 | xargs docker rmi"
+    docker images -a | grep "$1" | awk '{print $3}' | xargs docker rmi
+   else
+    echo "Usage: didelpat [PATTERN] to delete images by name pattern"
+   fi
+}
+
+################################-
+#- NETWORKS
+################################-
+dnet() {
+#- Docker network list or inspect by ID
+   if [ "$1x" != 'x' ]; then
+    echo "Docker network inspect $1: docker network inspect $1"
+    docker network inspect $1
+    echo "Delete: dndel [NAME] or dndel all"
+   else
+    echo "Docker network list: docker network ls"
+    docker network ls
+    echo "Inspect: dnet [ID] | Delete: dndel [NAME] or dndel all"
+   fi
+}
+dndel() {
+#- Docker network delete by name or prune all unused
+   if [ "$1x" != 'x' ]; then
+     if [ "$1" != 'all' ]; then
+        echo "\n DELETING NETWORK $1"
+        echo "docker network rm (matching $1, excluding default bridge)"
+        docker network rm $(docker network ls | awk '$3 == "bridge" && $2 != "bridge" { print $2 }' | grep "$1")
+     else
+        echo "\n PRUNING ALL unused networks: docker network prune"
+        docker network prune
+     fi
+   else
+    echo "Delete networks"
+    echo "Usage: dndel [NAME] to delete by name or dndel all to prune unused"
+   fi
+}
+
+################################-
+#- VOLUMES
+################################-
+dv() {
+#- Docker volume list or inspect by name
+   if [ "$1x" != 'x' ]; then
+    echo "Docker volume inspect $1: docker volume inspect $1"
+    docker volume inspect $1
+    echo "Delete: dvdel [NAME] or dvdel all"
+   else
+    echo "Docker volume list: docker volume ls"
+    docker volume ls
+    echo "Inspect: dv [NAME] | Delete: dvdel [NAME] or dvdel all"
+   fi
+}
+dvdel() {
+#- Docker volume delete by name or prune all unused
+   if [ "$1x" != 'x' ]; then
+     if [ "$1" != 'all' ]; then
+        echo "\n DELETING VOLUME $1"
+        echo "docker volume rm (matching $1)"
+        docker volume rm $(docker volume ls | grep "$1" | awk '{ print $2 }')
+     else
+        echo "\n PRUNING ALL unused volumes: docker volume prune"
+        docker volume prune
+     fi
+   else
+    echo "Delete volumes"
+    echo "Usage: dvdel [NAME] to delete by name or dvdel all to prune unused"
+   fi
+}
+
+################################-
+#- SYSTEM CLEANUP
+################################-
+alias dprune='echo "Docker system prune (unused containers, networks, images): docker system prune";docker system prune'
+alias dprunea='echo "Docker system prune ALL including unused images: docker system prune -a";docker system prune -a'
+alias ddf='echo "Docker disk usage: docker system df";docker system df'

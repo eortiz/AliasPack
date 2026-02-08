@@ -1,0 +1,365 @@
+################################-
+#- LINUX Aliases
+################################-
+
+# Shell detection for bash/zsh compatibility
+if [ -n "$ZSH_VERSION" ]; then
+    _CURRENT_SHELL="zsh"
+elif [ -n "$BASH_VERSION" ]; then
+    _CURRENT_SHELL="bash"
+else
+    _CURRENT_SHELL="unknown"
+fi
+
+################################-
+#- SYSTEM SERVICES (systemd)
+################################-
+alias service='echo "Systemd control: systemctl";systemctl'
+alias start='echo "Start service: sudo systemctl start [SERVICE]";sudo systemctl start'
+alias stop='echo "Stop service: sudo systemctl stop [SERVICE]";sudo systemctl stop'
+alias reload='echo "Reload systemd daemon: sudo systemctl daemon-reload";sudo systemctl daemon-reload; echo "systemctl reloaded!"'
+alias enable='echo "Enable service at boot: sudo systemctl enable [SERVICE]";sudo systemctl enable'
+alias fail='echo "Show failed services: sudo systemctl --failed";sudo systemctl --failed'
+alias journal='echo "Follow service journal: sudo journalctl -fuu [SERVICE]";sudo journalctl -fuu'
+alias status='echo "List all services: systemctl -t service -a";systemctl -t service -a'
+alias statusint='echo "List pylis services: systemctl -t service -a | grep pylis_";systemctl -t service -a | grep pylis_'
+alias hres='echo "Restart Home-Assistant: sudo systemctl restart home-assistant.service";sudo systemctl restart home-assistant.service; systemctl status home-assistant.service'
+
+################################-
+#- PYLIS SERVICE MANAGEMENT
+################################-
+
+list() {
+#- Show pylis running services or detail for a specific service
+    if [ -z "$1" ]; then
+        echo "Show pylis services: systemctl -a | grep pylis (use: list [SERVICE] for detail)"
+        sudo systemctl -a | grep pylis
+    else
+        echo "Pylis services with detail for: $1"
+        sudo systemctl -a | grep pylis
+        sudo systemctl status "$1"
+    fi
+}
+
+syst() {
+#- Stop a pylis service
+    if [ -z "$1" ]; then
+        echo "Usage: syst [SERVICE] stop a pylis service"
+    else
+        echo "Stop pylis service: sudo systemctl stop $1"
+        sudo systemctl stop "$1"
+        sudo systemctl status "$1"
+    fi
+}
+
+sysru() {
+#- Start a pylis service
+    if [ -z "$1" ]; then
+        echo "Usage: sysru [SERVICE] start a pylis service"
+    else
+        echo "Start pylis service: sudo systemctl start $1"
+        sudo systemctl start "$1"
+        sudo systemctl status "$1"
+    fi
+}
+
+################################-
+#- SYSTEM INFORMATION
+################################-
+alias df='echo "Disk usage by filesystem: df -Tha --total";df -Tha --total'
+alias du='echo "Space used per folder (sorted): du -ach | sort -h";du -ach | sort -h'
+alias free='echo "Memory usage (MB with total): free -mt";free -mt'
+alias ps='echo "All processes (tree view): ps auxf";ps auxf'
+
+usage() {
+#- Display memory, disk and CPU usage
+    echo "System resource usage: memory, disk, CPU"
+    free -m | awk 'NR==2{printf "Memory Usage: %s/%sMB (%.2f%%)\n", $3,$2,$3*100/$2 }'
+    df -h | awk '$NF=="/"{printf "Disk Usage: %d/%dGB (%s)\n", $3,$2,$5}'
+    top -bn1 | grep load | awk '{printf "CPU Load: %.2f\n", $(NF-2)}'
+}
+
+usageproc() {
+#- Display CPU and memory usage by process name
+    if [ -z "$1" ]; then
+        echo "Usage: usageproc [PROCESS_NAME] show CPU and memory usage by process"
+    else
+        echo "CPU and memory usage for: $1"
+        echo "%CPU %MEM  TIME  NAME"
+        top -b -n 1 | grep "$1" | tr -s ' ' | cut -d ' ' -f 9,10,11,12
+    fi
+}
+
+dirsize() {
+#- Show directory sizes from current path (sorted, top N)
+    echo "Directory size from current path (sorted)"
+    if [ -z "$1" ]; then
+        echo "Top 20 directories: du -ach . | sort -hr | head -n 20"
+        command du -ach . | sort -hr | head -n 20
+    else
+        echo "Top $1 directories: du -ach . | sort -hr | head -n $1"
+        command du -ach . | sort -hr | head -n "$1"
+    fi
+}
+
+################################-
+#- PACKAGE MANAGEMENT
+################################-
+alias update='echo "Update, upgrade and autoremove: sudo apt-get update && upgrade && autoremove";sudo apt-get update && sudo apt-get upgrade && sudo apt-get autoremove'
+alias reboot='echo "Reboot system now: sudo shutdown -r now";sudo shutdown -r now'
+
+################################-
+#- PYTHON
+################################-
+alias p3='echo "Python 3 as root: sudo python3";sudo python3'
+
+################################-
+#- LOG & HISTORY
+################################-
+alias syslog='echo "Follow syslog: sudo tail -f /var/log/syslog";sudo tail -f /var/log/syslog'
+alias histg='echo "Search command history: history | grep [PATTERN]";history | grep'
+
+# History without line numbers (bash/zsh compatible)
+if [ "$_CURRENT_SHELL" = "zsh" ]; then
+    alias hst='echo "History without line numbers: fc -l 1 (stripped)";fc -l 1 | sed "s/^ *[0-9]* *//"'
+else
+    alias hst='echo "History without line numbers: history | cut -c 8-";history | cut -c 8-'
+fi
+
+logreal() {
+#- Follow a file in real-time (tail -f)
+    if [ -z "$1" ]; then
+        echo "Usage: logreal [FILE] follow a file in real-time (tail -f)"
+    else
+        echo "Follow file in real-time: tail -f $1"
+        tail -f "$1"
+    fi
+}
+
+logn() {
+#- Show last N lines of a file
+    if [ -z "$1" ] || [ -z "$2" ]; then
+        echo "Usage: logn [LINES] [FILE] show last N lines of a file"
+    else
+        echo "Show last $1 lines: tail -n $1 $2"
+        tail -n "$1" "$2"
+    fi
+}
+
+logfind() {
+#- Search for a pattern in file tail output
+    if [ -z "$1" ] || [ -z "$2" ]; then
+        echo "Usage: logfind [FILE] [PATTERN] search pattern in tail output"
+    else
+        echo "Search in tail: tail $1 | grep $2"
+        tail "$1" | grep "$2"
+    fi
+}
+
+################################-
+#- SEARCH & PROCESSES
+################################-
+# NOTE: uses 'command ps' to bypass the ps alias and avoid broken expansion
+alias psg='echo "Search running processes: ps aux | grep [PATTERN]";command ps aux | grep -v grep | grep -i -e VSZ -e'
+alias wget='echo "Download with resume: wget -c [URL]";wget -c'
+
+################################-
+#- DIRECTORY LISTING
+################################-
+
+lx() {
+#- List files with octal permissions (ls -lha + awk octal)
+    echo "List files with octal permissions: ls -lha with awk octal conversion"
+    ls -lha --color=always -F --group-directories-first | awk '{k=0;s=0;for(i=0;i<=8;i++){;k+=((substr($1,i+2,1)~/[rwxst]/)*2^(8-i));};j=4;for(i=4;i<=10;i+=3){;s+=((substr($1,i,1)~/[stST]/)*j);j/=2;};if(k){;printf("%0o%0o ",s,k);};print;}'
+}
+
+################################-
+#- FILE VIEWING
+################################-
+
+cats() {
+#- Display file with comment lines stripped out
+    if [ -z "$1" ]; then
+        echo "Usage: cats [FILE] display file with comment lines (#) stripped out"
+    else
+        echo "Cat without comments: cat $1 | sed '/#/d'"
+        cat "$1" | sed '/#/d'
+    fi
+}
+
+################################-
+#- FILE OPERATIONS (copy, sync)
+################################-
+alias cpi='echo "Copy preserving attributes and symlinks: cp -avr [SRC] [DEST]";cp -avr'
+alias rsc='echo "Rsync with verbose and archive: rsync -av --progress [SRC] [DEST]";rsync -av --progress'
+alias rscg='echo "Rsync excluding .git: rsync -av --progress --exclude .git [SRC] [DEST]";rsync -av --progress --exclude .git'
+
+################################-
+#- ARCHIVE EXTRACTION
+################################-
+
+extract() {
+#- Extract compressed files with corresponding tool
+    if [ -z "$1" ]; then
+        echo "Usage: extract <path/file>.<zip|rar|bz2|gz|tar|tbz2|tgz|Z|7z|xz|zst|ex|tar.bz2|tar.gz|tar.xz>"
+        echo "       extract <path/file_1.ext> [path/file_2.ext] [path/file_3.ext]"
+        return 1
+    else
+        for n in "$@"; do
+            if [ -f "$n" ]; then
+                echo "Extracting: $n"
+                case "${n%,}" in
+                    *.tar.bz2|*.tar.gz|*.tar.xz|*.tbz2|*.tgz|*.txz|*.tar)
+                        echo "Using: tar xvf \"$n\""
+                        tar xvf "$n"       ;;
+                    *.lzma)
+                        echo "Using: unlzma ./$n"
+                        unlzma ./"$n"      ;;
+                    *.bz2)
+                        echo "Using: bunzip2 ./$n"
+                        bunzip2 ./"$n"     ;;
+                    *.rar)
+                        echo "Using: unrar x -ad ./$n"
+                        unrar x -ad ./"$n" ;;
+                    *.gz)
+                        echo "Using: gunzip ./$n"
+                        gunzip ./"$n"      ;;
+                    *.zip)
+                        echo "Using: unzip ./$n"
+                        unzip ./"$n"       ;;
+                    *.z)
+                        echo "Using: uncompress ./$n"
+                        uncompress ./"$n"  ;;
+                    *.7z|*.arj|*.cab|*.chm|*.deb|*.dmg|*.iso|*.lzh|*.msi|*.rpm|*.udf|*.wim|*.xar)
+                        echo "Using: 7z x ./$n"
+                        7z x ./"$n"        ;;
+                    *.xz)
+                        echo "Using: unxz ./$n"
+                        unxz ./"$n"        ;;
+                    *.exe)
+                        echo "Using: cabextract ./$n"
+                        cabextract ./"$n"  ;;
+                    *.zst)
+                        echo "Using: unzstd ./$n"
+                        unzstd ./"$n"      ;;
+                    *)
+                        echo "extract: '$n' - unknown archive method"
+                        return 1           ;;
+                esac
+            else
+                echo "'$n' - file does not exist"
+                return 1
+            fi
+        done
+    fi
+}
+
+################################-
+#- NETWORK
+################################-
+
+netstatp() {
+#- Show listening network ports (prefers ss over netstat)
+    if command -v ss >/dev/null 2>&1; then
+        echo "Listening ports (ss): ss -tulpn"
+        ss -tulpn
+    else
+        echo "Listening ports (netstat): netstat -tulpn"
+        netstat -tulpn
+    fi
+}
+
+mip() {
+#- Show machine IP, MAC, gateway, and external IP
+    echo "Machine network information"
+    # Detect default network interface from routing table
+    local iface
+    iface=$(ip route | grep default | awk '{print $5}' | head -1)
+
+    echo "HOSTNAME:"
+    hostname
+    echo "IP ADDRESS:"
+    if [ -n "$iface" ]; then
+        ip addr show "$iface" | grep "inet\b" | awk '{print $2}' | cut -d/ -f1
+    else
+        ip addr show | grep "inet\b" | grep -v "127.0.0.1" | awk '{print $2}' | cut -d/ -f1
+    fi
+    echo "MAC ADDRESS:"
+    if [ -n "$iface" ]; then
+        ip addr show "$iface" | grep -w ether | awk '{print $2}'
+    else
+        ip link show | grep -A1 "state UP" | grep ether | awk '{print $2}'
+    fi
+    echo "GATEWAY:"
+    ip route | grep default | awk '{print $3}'
+    echo "EXTERNAL IP:"
+    curl -s --show-error ifconfig.co
+}
+
+alias ping5='echo "Ping 5 times: ping -c 5 [HOST]";ping -c 5'
+
+################################-
+#- SAMBA
+################################-
+alias smbusers='echo "List Samba users: sudo pdbedit -L -v";sudo pdbedit -L -v'
+
+################################-
+#- SECURE DELETE
+################################-
+
+sdel() {
+#- Securely delete a file (shred 3 passes then remove)
+    if [ -z "$1" ]; then
+        echo "Usage: sdel [FILE] securely delete a file (3 overwrite passes)"
+    else
+        echo "Secure delete file: shred -vfz -n 3 $1 && rm -f $1"
+        shred -vfz -n 3 "$1" && rm -f "$1"
+    fi
+}
+
+sddel() {
+#- Securely delete a directory (shred all files, then remove dir)
+    if [ -z "$1" ]; then
+        echo "Usage: sddel [DIR] securely delete a directory and its contents"
+    else
+        echo "Secure delete directory: shred all files in $1 then rm -rf"
+        find "$1" -type f -exec shred -vfz -n 3 {} \;
+        rm -rf "$1"
+    fi
+}
+
+################################-
+#- SSH SHORTCUTS
+################################-
+
+sshm() {
+#- Quick SSH to machine by last IP octet (10.10.0.X)
+    if [ -z "$1" ]; then
+        echo "Usage: sshm [LAST_OCTET] SSH to pi@10.10.0.[LAST_OCTET]"
+    else
+        echo "SSH to: pi@10.10.0.$1"
+        echo > /root/.ssh/known_hosts
+        ssh -o "StrictHostKeyChecking no" pi@10.10.0.$1
+    fi
+}
+
+shname() {
+#- Get hostname of machine by last IP octet (10.10.0.X)
+    if [ -z "$1" ]; then
+        echo "Usage: shname [LAST_OCTET] get hostname of pi@10.10.0.[LAST_OCTET]"
+    else
+        echo "Get hostname: pi@10.10.0.$1"
+        echo > /root/.ssh/known_hosts
+        ssh -o "StrictHostKeyChecking no" pi@10.10.0.$1 uname -n
+    fi
+}
+
+shn() {
+#- Quick SSH to machine by last IP octet (10.1.1.X)
+    if [ -z "$1" ]; then
+        echo "Usage: shn [LAST_OCTET] SSH to pi@10.1.1.[LAST_OCTET]"
+    else
+        echo "SSH to: pi@10.1.1.$1"
+        ssh pi@10.1.1.$1
+    fi
+}

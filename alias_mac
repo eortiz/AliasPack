@@ -1,0 +1,77 @@
+################################-
+#- MAC Aliases
+################################-
+
+################################-
+#- CLIPBOARD
+################################-
+alias copy='pbcopy; echo "Copy to clipboard: pbcopy"; echo "  echo \"Hello World\" | pbcopy"; echo "  pbcopy < file.txt"; echo "  cat file.txt | pbcopy"'
+alias paste='echo "Paste from clipboard: pbpaste"; echo "  pbpaste"; echo "  pbpaste > file.txt"; echo "  pbpaste | grep pattern"; pbpaste'
+
+################################-
+#- APPLICATIONS
+################################-
+alias code='echo "Open in VS Code: open -a Visual Studio Code";open -a "Visual Studio Code"'
+
+################################-
+#- PYTHON (pyenv)
+################################-
+# Initialize pyenv if installed (eval runs once per shell session)
+if command -v pyenv 1>/dev/null 2>&1; then
+    eval "$(pyenv init -)"
+fi
+
+################################-
+#- FLUTTER
+################################-
+# NOTE: Renamed from fc/fd to fl* prefix to avoid shadowing
+#       shell built-in 'fc' (fix command) and 'fd' (find tool)
+alias flc='echo "Flutter create: flutter create [PROJECT]";flutter create'
+alias fld='echo "Flutter doctor: flutter doctor";flutter doctor'
+alias flpg='echo "Flutter pub get: flutter pub get";flutter pub get'
+#- When imports don't resolve, run flpu to upgrade packages
+alias flpu='echo "Flutter pub upgrade: flutter pub upgrade";flutter pub upgrade'
+alias flr='echo "Flutter run: flutter run";flutter run'
+alias flb='echo "Flutter build: flutter build";flutter build'
+alias flt='echo "Flutter test: flutter test";flutter test'
+alias flcl='echo "Flutter clean: flutter clean";flutter clean'
+
+################################-
+#- NETWORK
+################################-
+
+netstatp() {
+#- Show listening network ports (macOS lsof)
+    echo "Listening ports: lsof -PiTCP -sTCP:LISTEN"
+    lsof -PiTCP -sTCP:LISTEN
+}
+
+mip() {
+#- Show machine IP, MAC, gateway, and external IP
+    echo "Machine network information"
+    # Detect active network interface from default route
+    local iface
+    iface=$(route -n get default 2>/dev/null | grep 'interface:' | awk '{print $2}')
+    if [ -z "$iface" ]; then
+        iface="en0"
+    fi
+
+    echo "HOSTNAME:"
+    scutil --get ComputerName 2>/dev/null || hostname
+    echo "IP ADDRESS:"
+    ipconfig getifaddr "$iface" 2>/dev/null || ifconfig "$iface" | grep "inet " | awk '{print $2}'
+    echo "MAC ADDRESS:"
+    ifconfig "$iface" | grep -w ether | awk '{print $2}'
+    echo "GATEWAY:"
+    route -n get default 2>/dev/null | grep 'gateway:' | awk '{print $2}'
+    echo "EXTERNAL IP:"
+    curl -s --show-error ifconfig.co
+}
+
+################################-
+#- SYSTEM UTILITIES
+################################-
+alias flushdns='echo "Flush DNS cache: sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder";sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder; echo "DNS cache flushed"'
+alias nosleep='echo "Prevent Mac from sleeping: caffeinate -d";caffeinate -d'
+alias showfiles='echo "Show hidden files in Finder: defaults write AppleShowAllFiles YES";defaults write com.apple.finder AppleShowAllFiles YES; killall Finder'
+alias hidefiles='echo "Hide hidden files in Finder: defaults write AppleShowAllFiles NO";defaults write com.apple.finder AppleShowAllFiles NO; killall Finder'

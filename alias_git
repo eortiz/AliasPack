@@ -1,0 +1,254 @@
+################################-
+#- GIT Aliases
+################################-
+
+################################-
+#- CLONE / INIT
+################################-
+alias gcl='echo "Clone remote repository to local: git clone";git clone'
+alias gsu='echo "Update submodules recursively: git submodule update --init --recursive";git submodule update --init --recursive'
+
+################################-
+#- STATUS
+################################-
+alias g='echo "git";git'
+alias get='echo "git";git'
+alias gst='echo "Working tree status: git status";git status'
+alias gs='echo "Working tree status: git status";git status'
+alias gss='echo "Working tree status short: git status -s";git status -s'
+
+################################-
+#- STAGING (ADD / REMOVE)
+################################-
+alias ga='echo "Stage files: git add";git add'
+alias gap='echo "Stage files interactively by patch: git add -p";git add -p'
+alias gall='echo "Stage all changes (new, modified, deleted): git add -A";git add -A'
+alias gus='echo "Unstage file (undo git add): git reset HEAD";git reset HEAD'
+alias grm='echo "Unstage file (remove from index): git rm --cached";git rm --cached'
+alias grmd='echo "Delete file from repo and stage deletion: git rm";git rm'
+alias gmv='echo "Move or rename file: git mv";git mv'
+alias grs='echo "Restore file to last commit (discard changes): git restore";git restore'
+alias grss='echo "Unstage file (modern): git restore --staged";git restore --staged'
+
+################################-
+#- COMMIT
+################################-
+alias gc='echo "Commit staged changes (verbose): git commit -v";git commit -v'
+alias gca='echo "Commit all tracked changes (verbose): git commit -v -a";git commit -v -a'
+alias gcm='echo "Commit with inline message: git commit -v -m";git commit -v -m'
+alias gci='echo "Commit interactively: git commit --interactive";git commit --interactive'
+alias gcam='echo "Stage all tracked and commit with message: git commit -am";git commit -am'
+alias gcsam='echo "Stage all tracked and commit signed with message: git commit -S -am";git commit -S -am'
+alias gcaa='echo "Amend last commit with all unstaged changes (keep message): git commit -a --amend -C HEAD";git commit -a --amend -C HEAD'
+alias gcae='echo "Amend last commit (edit message): git commit --amend";git commit --amend'
+
+################################-
+#- BRANCH
+################################-
+alias gb='echo "List branches: git branch";git branch'
+alias gba='echo "List all branches (local and remote): git branch -a";git branch -a'
+alias gbt='echo "Create tracking branch: git branch --track";git branch --track'
+alias gbm='echo "Rename branch: git branch -m";git branch -m'
+alias gbdel='echo "Delete branch: git branch -D";git branch -D'
+alias gcount='echo "Commit count by author: git shortlog -sn";git shortlog -sn'
+
+################################-
+#- CHECKOUT / SWITCH
+################################-
+alias gck='echo "Checkout branch or file: git checkout";git checkout'
+alias gcom='echo "Checkout main branch: git checkout main";git checkout main'
+alias gcb='echo "Create and switch to new branch: git checkout -b";git checkout -b'
+alias gct='echo "Checkout and track remote branch: git checkout --track";git checkout --track'
+alias gsw='echo "Switch branch (modern): git switch";git switch'
+
+################################-
+#- FETCH / PULL
+################################-
+alias gf='echo "Fetch all remotes and prune: git fetch --all --prune";git fetch --all --prune'
+alias gft='echo "Fetch all remotes with tags: git fetch --all --prune --tags";git fetch --all --prune --tags'
+alias gfv='echo "Fetch all remotes verbose: git fetch --all --prune --verbose";git fetch --all --prune --verbose'
+alias gftv='echo "Fetch all remotes with tags verbose: git fetch --all --prune --tags --verbose";git fetch --all --prune --tags --verbose'
+alias gfo='echo "Fetch from origin only: git fetch origin";git fetch origin'
+alias gfou='echo "Fetch origin and upstream, merge upstream/main: git fetch origin -v; git fetch upstream -v; git merge upstream/main";git fetch origin -v; git fetch upstream -v; git merge upstream/main'
+alias gpl='echo "Pull (update local with remote commits): git pull";git pull'
+alias gpuum='echo "Pull from upstream main: git pull upstream main";git pull upstream main'
+alias gpuom='echo "Pull from origin main: git pull origin main";git pull origin main'
+alias gpr='echo "Pull with rebase: git pull --rebase";git pull --rebase'
+alias gpp='echo "Pull then push: git pull && git push";git pull && git push'
+alias gup='echo "Fetch and rebase: git fetch && git rebase";git fetch && git rebase'
+
+################################-
+#- PUSH
+################################-
+alias gp='echo "Push to remote: git push";git push'
+alias gpo='echo "Push to origin: git push origin";git push origin'
+alias gpu='echo "Push and set upstream: git push --set-upstream";git push --set-upstream'
+alias gpom='echo "Push to origin main: git push origin main";git push origin main'
+alias gpod='echo "Push to origin developer: git push origin developer";git push origin developer'
+alias gpf='echo "Force push (safe, with lease): git push --force-with-lease";git push --force-with-lease'
+
+################################-
+#- MERGE
+################################-
+alias gm='echo "Merge branch: git merge";git merge'
+alias gmm='echo "Merge origin/main into current branch: git merge origin/main";git merge origin/main'
+alias gmd='echo "Merge origin/developer into current branch: git merge origin/developer";git merge origin/developer'
+alias gma='echo "Abort current merge: git merge --abort";git merge --abort'
+alias gcp='echo "Cherry-pick a commit: git cherry-pick";git cherry-pick'
+
+################################-
+#- REBASE
+################################-
+alias grb='echo "Rebase current branch: git rebase";git rebase'
+alias grbc='echo "Continue rebase after resolving conflicts: git rebase --continue";git rebase --continue'
+alias grba='echo "Abort rebase: git rebase --abort";git rebase --abort'
+alias grbs='echo "Skip current commit during rebase: git rebase --skip";git rebase --skip'
+alias greconcile='echo "Reconcile with origin/main: git fetch origin && git rebase origin/main";git fetch origin && git rebase origin/main && git status && echo "If there is a conflict, fix, then run git add, then git rebase --continue,\n and then git push origin main or force with git push --force-with-lease"'
+
+################################-
+#- DIFF
+################################-
+alias gd='echo "Show unstaged changes: git diff";git diff'
+alias gdm='echo "Diff against origin/main: git diff origin/main";git diff origin/main'
+alias gdc='echo "Show staged changes (cached): git diff --cached";git diff --cached'
+alias gdif='echo "Fetch and diff to show remote changes: git fetch; git diff --name-only main origin/main";git fetch; git diff --name-only main origin/main'
+
+function gdv() {
+	#- Git diff piped to vim (read-only)
+	echo "Git diff in vim: git diff -w | vim -R -"
+	git diff -w "$@" | vim -R -
+}
+
+function gdd() {
+	#- Git diff against origin/dev branch
+	echo "Git diff origin/dev$1: git diff origin/dev$1"
+	git diff "origin/dev$1"
+}
+
+################################-
+#- STASH
+################################-
+alias gsta='echo "Stash current changes: git stash";git stash'
+alias gstal='echo "List stashes: git stash list";git stash list'
+alias gstap='echo "Apply newest stash and remove from list: git stash pop";git stash pop'
+alias gstapp='echo "Apply stash (keep in list): git stash apply";git stash apply'
+alias gstad='echo "Delete newest stash: git stash drop";git stash drop'
+
+################################-
+#- LOG / HISTORY
+################################-
+alias glog='echo "Commit graph (oneline, decorated): git log --oneline --graph --decorate --all";git log --oneline --graph --decorate --all'
+alias gll='echo "Compact commit graph: git log --graph --pretty=oneline --abbrev-commit";git log --graph --pretty=oneline --abbrev-commit'
+alias gg="echo \"Detailed commit graph: git log --graph (pretty)\";git log --graph --pretty=format:'%C(bold)%h%Creset%C(magenta)%d%Creset %s %C(yellow)<%an> %C(cyan)(%cr)%Creset' --abbrev-commit --date=relative"
+alias ggs='echo "Detailed commit graph with stats: gg --stat";gg --stat'
+alias gsl='echo "Commit count by author: git shortlog -sn";git shortlog -sn'
+alias gwc='echo "Show what changed (commit-by-commit): git whatchanged";git whatchanged'
+alias gnew='echo "Show commits since last pull: git log HEAD@{1}..HEAD@{0}";git log HEAD@{1}..HEAD@{0}'
+alias gsh='echo "Show commit details: git show";git show'
+alias gbl='echo "Show line-by-line authorship: git blame";git blame'
+
+################################-
+#- TAG
+################################-
+alias gt='echo "List tags: git tag";git tag'
+alias gta='echo "Create annotated tag: git tag -a";git tag -a'
+alias gtd='echo "Delete tag: git tag -d";git tag -d'
+alias gtl='echo "List tags: git tag -l";git tag -l'
+
+function gtam() {
+	#- Git tag with annotation and message
+	echo "Create annotated tag with message: git tag -a $1 -m $2"
+	git tag -a $1 -m $2
+}
+
+case $OSTYPE in
+  darwin*)
+    alias gtls='echo "List tags sorted: git tag -l | sort";git tag -l | sort'
+    ;;
+  *)
+    alias gtls='echo "List tags sorted: git tag -l | sort -V";git tag -l | sort -V'
+    ;;
+esac
+
+################################-
+#- REMOTE
+################################-
+alias gr='echo "Manage remotes: git remote";git remote'
+alias grv='echo "Show remotes with URLs: git remote -v";git remote -v'
+alias grsho='echo "Show remote origin details: git remote show origin";git remote show origin'
+alias grao='echo "Add remote origin: git remote add origin";git remote add origin'
+
+################################-
+#- CLEANUP / RESET
+################################-
+alias gclean='echo "Remove untracked files and directories: git clean -fd";git clean -fd'
+alias gpristine='echo "Hard reset and remove all untracked files: git reset --hard && git clean -dfx";git reset --hard && git clean -dfx'
+alias gitow='echo "Overwrite local with remote branch: git reset --hard @{u}; git pull";git reset --hard @{u};git pull'
+alias grsh='echo "Undo last commit (keep changes staged): git reset --soft HEAD~1";git reset --soft HEAD~1'
+
+################################-
+#- EXPORT
+################################-
+alias gexport='echo "Export repo as zip archive: git archive --format zip --output";git archive --format zip --output'
+alias ggui='echo "Open git GUI: git gui";git gui'
+
+################################-
+#- ADVANCED WORKFLOWS
+################################-
+
+# 1. Save everything you're doing right now on a new branch
+#    Usage: gitsave feature/login-rework "Refactor login and remove old codepage stuff"
+gitsave() {
+    if [[ -z "$1" || -z "$2" ]]; then
+        echo "Save everything you're doing right now on a new branch"
+        echo "Usage: gitsave <branch-name> <commit-description>"
+        echo "Example: gitsave feature/cleanup-env \"WIP: remove old codepage experiments and fix docker\""
+        return 1
+    fi
+
+    local branch="$1"
+    local message="$2"
+
+    # Create and switch to the new branch (with all current changes)
+    git switch -c "$branch" || return 1
+
+    # Commit absolutely everything: modified, deleted, untracked (but not ignored)
+    git add -A
+    git commit -m "WIP: $message"
+
+    echo "Your current work is now safely saved on branch → $branch"
+    echo "   Commit: WIP: $message"
+    echo ""
+    echo "You can now clean your main branch with: gitrelease v1.5.0   (or whatever tag)"
+}
+
+# 2. Reset main to a released tag and make it perfectly clean
+#    Usage: gitrelease v1.5.0
+gitrelease() {
+    if [[ -z "$1" ]]; then
+        echo "Reset main to a released tag and make it perfectly clean"
+        echo "Usage: gitrelease <tag-or-commit>"
+        echo "Examples:"
+        echo "   gitrelease v1.5.0"
+        echo "   gitrelease origin/main"
+        echo "   gitrelease HEAD~3"
+        return 1
+    fi
+
+    local target="$1"
+
+    git switch main || return 1
+    git fetch origin --tags  # make sure we have the latest tags
+
+    # Hard reset to the exact tag/commit you asked for
+    git reset --hard "$target"
+
+    # Clean any files that are not in that tag (untracked files, etc.)
+    git clean -fd
+
+    echo "main is now exactly at $target and perfectly clean."
+}
+
+# Optional nice aliases (you can also type the full function name)
+alias gsav='gitsave'
+alias grel='gitrelease'
