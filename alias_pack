@@ -61,7 +61,7 @@ case "${unameOut}" in
     *)
        machine="UNKNOWN:${unameOut}"
 esac
-echo ${machine}
+echo "Alias Pack Loaded for ${machine}"
 
 
 

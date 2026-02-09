@@ -6,7 +6,7 @@ A modular Bash aliases and utility functions package for developers and sysadmin
 
 ```bash
 # Clone to ~/aliaspak/
-git clone <repo-url> ~/aliaspak
+git clone https://github.com/eortiz/AliasPack.git ~/aliaspak
 
 # Install
 chmod +x ~/aliaspak/install.sh
