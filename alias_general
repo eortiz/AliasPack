@@ -70,6 +70,8 @@ alias dact='echo "Deactivate Python virtual environment: deactivate";deactivate'
 ################################-
 alias path='echo "Display PATH entries one per line: echo \$PATH | tr : \\n";echo $PATH | tr ":" "\n"'
 alias now='echo "Current date and time: date";date'
+alias x='exit'
+
 ssh_with_user() {
     local username="$1"
     local host="$2"

@@ -1,3 +1,4 @@
 sources/
 .claude
 CLAUDE.md
+.env

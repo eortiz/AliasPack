@@ -42,6 +42,8 @@ case "${unameOut}" in
       machine=Linux
       echo "#Sourcing: alias_linux"
       source ~/aliaspak/alias_linux
+      echo "#Sourcing: alias_docker"
+      source ~/aliaspak/alias_docker
       echo "#Sourcing: alias_git"
       source ~/aliaspak/alias_git
     ;;
@@ -63,6 +65,34 @@ case "${unameOut}" in
 esac
 echo "Alias Pack Loaded for ${machine}"
 
+# Load .env file if it exists (for environment variables and custom aliases)
+if [ -f ~/aliaspak/.env ]; then
+  echo "#Loading environment variables from ~/aliaspak/.env"
+  source ~/aliaspak/.env
 
+  # Source additional alias files if specified in ADDITIONAL_ALIASES
+  if [ -n "$ADDITIONAL_ALIASES" ]; then
+    echo "#Loading additional alias files (override mode)"
+    for alias_file in $ADDITIONAL_ALIASES; do
+      # Check if it's an absolute path or relative to ~/aliaspak/
+      if [[ "$alias_file" = /* ]]; then
+        # Absolute path
+        if [ -f "$alias_file" ]; then
+          echo "#Sourcing (override): $alias_file"
+          source "$alias_file"
+        else
+          echo "#Warning: Additional alias file not found: $alias_file"
+        fi
+      else
+        # Relative to ~/aliaspak/
+        if [ -f ~/aliaspak/"$alias_file" ]; then
+          echo "#Sourcing (override): ~/aliaspak/$alias_file"
+          source ~/aliaspak/"$alias_file"
+        else
+          echo "#Warning: Additional alias file not found: ~/aliaspak/$alias_file"
+        fi
+      fi
+    done
+  fi
+fi
 
-#history | awk '{CMD[$2]++;count++;}END { for (a in CMD)print CMD[a] " " CMD[a]/count*100 "% " a;}' | grep -v "./" | column -c3 -s " " -t | sort -nr | nl |  head -n10
