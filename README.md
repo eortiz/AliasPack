@@ -56,6 +56,73 @@ hlp linux      # Linux-specific
 
 The help system is self-documenting - it parses `#-` comments and `alias` lines from the source files.
 
+## Environment Variables & Custom Aliases
+
+AliasPak supports a `.env` file for loading environment variables and custom alias overrides.
+
+### Setup
+
+1. **Create your `.env` file:**
+   ```bash
+   cp ~/aliaspak/.env.example ~/aliaspak/.env
+   ```
+
+2. **Add environment variables:**
+   ```bash
+   # Example .env content
+   export OPENAI_API_KEY="sk-your-api-key-here"
+   export GITHUB_TOKEN="ghp_your-token-here"
+   export EDITOR="vim"
+   ```
+
+3. **Override aliases with custom files:**
+   ```bash
+   # In your .env file, specify additional alias files to load
+   ADDITIONAL_ALIASES="alias_custom alias_work"
+   ```
+
+### Custom Alias Files
+
+Additional alias files are sourced **after** the default modules, allowing you to:
+- Override any default alias with your own implementation
+- Add organization-specific or personal aliases
+- Keep custom configurations separate from the base installation
+
+**Example workflow:**
+
+```bash
+# Create a custom alias file
+cat > ~/aliaspak/alias_custom <<'EOF'
+# Override default 'll' alias with your preferred format
+alias ll='ls -alFh --color=auto'
+
+# Add custom aliases
+alias myserver='ssh user@example.com'
+alias deploy='./scripts/deploy.sh'
+EOF
+
+# Enable in .env
+echo 'ADDITIONAL_ALIASES="alias_custom"' >> ~/aliaspak/.env
+
+# Reload shell
+source ~/.bashrc  # or ~/.zshrc
+```
+
+### Sourcing Order (with .env)
+
+```
+~/.zshrc (or .bashrc)
+  └── source ~/aliaspak/alias_pack       ← bootstrap
+        ├── alias_general                 ← cross-platform
+        ├── alias_mac / alias_linux       ← OS-specific
+        ├── alias_docker                  ← Docker/Compose
+        ├── alias_git                     ← Git
+        └── .env (if exists)              ← environment variables + custom overrides
+              └── ADDITIONAL_ALIASES      ← your custom alias files (override mode)
+```
+
+**Note:** The `.env` file is gitignored to protect sensitive data like API keys.
+
 ## Modules
 
 ### alias_general - Cross-Platform (16 aliases, 6 functions)
