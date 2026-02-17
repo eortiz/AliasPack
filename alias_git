@@ -114,20 +114,31 @@ alias gdc='echo "Show staged changes (cached): git diff --cached";git diff --cac
 alias gdif='echo "Fetch and diff to show remote changes: git fetch; git diff --name-only main origin/main";git fetch; git diff --name-only main origin/main'
 
 function gdifall() {
-	#- Fetch origin then show: release tag, commit log, changed files summary, and full per-file diff vs origin/main
+	#- Fetch origin then show: release tag, commit log, changed files with commit IDs, and full per-file diff vs remote
+	local branch upstream
+	branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+	if [ -z "$branch" ]; then
+		echo "Error: Not in a git repository"
+		return 1
+	fi
+	upstream=$(git rev-parse --abbrev-ref "@{u}" 2>/dev/null)
+	if [ -z "$upstream" ]; then
+		echo "Warning: No upstream set, falling back to origin/$branch"
+		upstream="origin/$branch"
+	fi
 	echo "=== Fetching origin: git fetch ==="
 	git fetch
-	echo "\n=== Release Tag (origin/main) ==="
-	git describe --tags origin/main 2>/dev/null || git log --oneline -1 --decorate origin/main
-	echo "\n=== Commits ahead of local main ==="
-	git log --oneline --decorate main..origin/main
+	echo "\n=== Release Tag ($upstream) ==="
+	git describe --tags "$upstream" 2>/dev/null || git log --oneline -1 --decorate "$upstream"
+	echo "\n=== Commits ahead of local $branch ==="
+	git log --oneline --decorate "$branch".."$upstream"
 	echo "\n=== Changed Files (commit-id | file | +added -removed) ==="
-	git log --pretty=format:"%h" --numstat main..origin/main | awk '
+	git log --pretty=format:"%h" --numstat "$branch".."$upstream" | awk '
 		NF==1 && /^[0-9a-f]+$/ { hash=$1 }
 		NF==3 { printf "%-10s  %-50s  +%s -%s\n", hash, $3, $1, $2 }
 	'
-	echo "\n=== Full Diff (main → origin/main) ==="
-	git diff main origin/main
+	echo "\n=== Full Diff ($branch → $upstream) ==="
+	git diff "$branch".."$upstream"
 }
 alias gdfa='gdifall'
 
