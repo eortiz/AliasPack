@@ -126,18 +126,18 @@ function gdifall() {
 		echo "Warning: No upstream set, falling back to origin/$branch"
 		upstream="origin/$branch"
 	fi
-	echo "=== Fetching origin: git fetch ==="
+	echo -e "=== Fetching origin: git fetch ==="
 	git fetch
-	echo "\n=== Release Tag ($upstream) ==="
+	echo -e "\n=== Release Tag ($upstream) ==="
 	git describe --tags "$upstream" 2>/dev/null || git log --oneline -1 --decorate "$upstream"
-	echo "\n=== Commits ahead of local $branch ==="
+	echo -e "\n=== Commits ahead of local $branch ==="
 	git log --oneline --decorate "$branch".."$upstream"
-	echo "\n=== Changed Files (commit-id | file | +added -removed) ==="
+	echo -e "\n=== Changed Files (commit-id | file | +added -removed) ==="
 	git log --pretty=format:"%h" --numstat "$branch".."$upstream" | awk '
 		NF==1 && /^[0-9a-f]+$/ { hash=$1 }
 		NF==3 { printf "%-10s  %-50s  +%s -%s\n", hash, $3, $1, $2 }
 	'
-	echo "\n=== Full Diff ($branch → $upstream) ==="
+	echo -e "\n=== Full Diff ($branch → $upstream) ==="
 	git diff "$branch".."$upstream"
 }
 alias gdfa='gdifall'
