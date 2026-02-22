@@ -108,7 +108,7 @@ dtop() {
    fi
 }
 
-dpsall {
+dpsall() {
     # Docker Process Show
     myString=$(printf "%70s");echo ${myString// /=}
     echo "Docker Processes"
