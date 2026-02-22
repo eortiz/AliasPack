@@ -73,7 +73,7 @@ dcex() {
 #- CONTAINER LIST & STATUS
 ################################-
 alias dps='echo "Docker process list running: docker ps";docker ps'
-alias dpsa='echo "Docker process list all: docker ps -a";docker ps -a'
+alias dpsl='echo "Docker process list all: docker ps -a";docker ps -a'
 
 dstat() {
 #- Docker container resource usage stats
@@ -108,6 +108,23 @@ dtop() {
    fi
 }
 
+dpsall {
+    # Docker Process Show
+    myString=$(printf "%70s");echo ${myString// /=}
+    echo "Docker Processes"
+    myString=$(printf "%70s");echo ${myString// /=}
+    echo "-Running:"
+    docker ps -a --filter 'status=running' --format 'table {{.ID}}\t{{.Names}}\t{{.Ports}}\t{{.Status}}\t{{.RunningFor}}\t{{.Image}}'
+    echo "-Stopped:"
+    docker ps -a --filter 'status=exited' --format 'table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.RunningFor}}\t{{.Image}}'
+
+}
+
+dpsa() {
+#- Docker ps all detailed: Name, Image, Status, Ports, Created, ID, Networks
+    echo "Docker ps all (detailed): docker ps -a --format table (Names, Image, Status, Ports, Created, ID, Networks)"
+    docker ps -a --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}\t{{.ID}}\t{{.Networks}}'
+}
 ################################-
 #- CONTAINER START / STOP / RESTART
 ################################-
