@@ -120,6 +120,7 @@ dpsall() {
 
 }
 
+unalias dpsa 2>/dev/null
 dpsa() {
 #- Docker ps all detailed: Name, Image, Status, Ports, Created, ID, Networks
     echo "Docker ps all (detailed): docker ps -a --format table (Names, Image, Status, Ports, Created, ID, Networks)"
