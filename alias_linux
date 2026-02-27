@@ -15,8 +15,6 @@ fi
 #- SYSTEM SERVICES (systemd)
 ################################-
 alias service='echo "Systemd control: systemctl";systemctl'
-alias start='echo "Start service: sudo systemctl start [SERVICE]";sudo systemctl start'
-alias stop='echo "Stop service: sudo systemctl stop [SERVICE]";sudo systemctl stop'
 alias reload='echo "Reload systemd daemon: sudo systemctl daemon-reload";sudo systemctl daemon-reload; echo "systemctl reloaded!"'
 alias enable='echo "Enable service at boot: sudo systemctl enable [SERVICE]";sudo systemctl enable'
 alias fail='echo "Show failed services: sudo systemctl --failed";sudo systemctl --failed'
@@ -25,6 +23,29 @@ alias status='echo "List all services: systemctl -t service -a";systemctl -t ser
 alias statusint='echo "List pylis services: systemctl -t service -a | grep pylis_";systemctl -t service -a | grep pylis_'
 alias hres='echo "Restart Home-Assistant: sudo systemctl restart home-assistant.service";sudo systemctl restart home-assistant.service; systemctl status home-assistant.service'
 
+stop() {
+    #- Systemd Stop with status
+    echo "STOP Pylis running services"
+    if [ -z "$1" ]; then
+        echo "Missing parameter [service name]"
+    else
+        sudo systemctl stop $1;
+        sleep 2
+        sudo systemctl status $1;
+    fi
+}
+
+start() {
+    #- Systemd Run with status
+    echo "START Pylis services"
+    if [ -z "$1" ]; then
+        echo "Missing parameter [service name]"
+    else
+        sudo systemctl start $1;
+        sleep 3
+        sudo systemctl status $1;
+    fi
+}
 ################################-
 #- PYLIS SERVICE MANAGEMENT
 ################################-
