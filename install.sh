@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# Last modified: 2026-02-27 02:13:40 | Updated: eortiz
 # install.sh - Install aliaspak by adding a single source line to your shell config
 #
 # Usage:

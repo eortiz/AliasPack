@@ -1,4 +1,5 @@
 # Aliases Pack Start
+# Last modified: 2026-02-27 02:12:33 | Updated: eortiz
 hlp(){
 #- This Help Command
   if [ "$1x" != 'x' ]; then
