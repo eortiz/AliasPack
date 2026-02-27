@@ -102,11 +102,18 @@ dirsize() {
     fi
 }
 
+alias cpu='echo "Show CPU model: cat /proc/cpuinfo | grep name | uniq";cat /proc/cpuinfo | grep "name" | uniq'
+alias ltop='echo "Top 10 largest files in current dir: du -a -h . | sort -n -r | head -n 10";du -a -h . | sort -n -r | head -n 10'
+alias lsp='echo "Block devices detailed: lsblk -o name,fstype,size,fsuse%,mountpoint,uuid,model,label";lsblk -o name,fstype,size,fsuse%,mountpoint,uuid,model,label | sed "s/ *$//"'
+alias lspp='echo "Block devices compact: lsblk -o name,fstype,size,fsuse%,mountpoint";lsblk -o name,fstype,size,fsuse%,mountpoint'
+
 ################################-
 #- PACKAGE MANAGEMENT
 ################################-
 alias update='echo "Update, upgrade and autoremove: sudo apt-get update && upgrade && autoremove";sudo apt-get update && sudo apt-get upgrade && sudo apt-get autoremove'
 alias reboot='echo "Reboot system now: sudo shutdown -r now";sudo shutdown -r now'
+alias dow='echo "Shutdown system now: shutdown now";shutdown now'
+alias reb='echo "Reboot system forcefully: reboot -f";reboot -f'
 
 ################################-
 #- PYTHON
@@ -156,6 +163,8 @@ logfind() {
     fi
 }
 
+alias jlog='echo "Journalctl last 1000 grep: journalctl | tail -n1000 | grep [PATTERN]";journalctl | tail -n1000 | grep'
+
 ################################-
 #- SEARCH & PROCESSES
 ################################-
@@ -172,6 +181,8 @@ lx() {
     echo "List files with octal permissions: ls -lha with awk octal conversion"
     ls -lha --color=always -F --group-directories-first | awk '{k=0;s=0;for(i=0;i<=8;i++){;k+=((substr($1,i+2,1)~/[rwxst]/)*2^(8-i));};j=4;for(i=4;i<=10;i+=3){;s+=((substr($1,i,1)~/[stST]/)*j);j/=2;};if(k){;printf("%0o%0o ",s,k);};print;}'
 }
+
+alias lm='echo "List files with MB sizes: ls -l --block-size=M";ls -l --block-size=M'
 
 ################################-
 #- FILE VIEWING
@@ -298,6 +309,12 @@ mip() {
 
 alias ping5='echo "Ping 5 times: ping -c 5 [HOST]";ping -c 5'
 
+netlisten() {
+#- Show network listeners (netstat -tulpn)
+    echo "Netstat only listeners: netstat -tulpn"
+    netstat -tulpn
+}
+
 ################################-
 #- SAMBA
 ################################-
@@ -361,5 +378,22 @@ shn() {
     else
         echo "SSH to: pi@10.1.1.$1"
         ssh pi@10.1.1.$1
+    fi
+}
+
+################################-
+#- SCREEN SESSIONS
+################################-
+
+scatt() {
+#- Create a named screen session
+    echo "Create screen session [to exit: ctrl+a d]"
+    if [ -z "$1" ]; then
+        echo "Enter Screen Name:"
+        read SCRNAME
+        screen -S "$SCRNAME"
+    else
+        echo "screen -S $1"
+        screen -S "$1"
     fi
 }

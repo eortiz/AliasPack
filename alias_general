@@ -31,6 +31,10 @@ mkcd() {
 ################################-
 alias c='echo "Clear screen: clear";clear'
 alias hg='echo "Search command history: history | grep";history | grep'
+alias les='echo "Less starting at end of file: less +G";less +G'
+alias scl='echo "List screen sessions: screen -ls";screen -ls'
+alias scdet='echo "Detach screen session: screen -d";screen -d'
+alias screat='echo "Reattach screen session: screen -r";screen -r'
 
 ################################-
 #- SEARCH
@@ -93,6 +97,16 @@ fixssh() {
     [ "$host" = "$1" ] && host="$1"
     ssh-keygen -R "$host" 2>/dev/null
     ssh -o StrictHostKeyChecking=no "$1"
+}
+
+delkhost() {
+#- Delete conflicting host from known_hosts by IP
+    if [ -z "$1" ]; then
+        echo "Usage: delkhost [IP] delete conflicting host from known_hosts"
+    else
+        echo "Delete host from known_hosts: ssh-keygen -f ~/.ssh/known_hosts -R $1"
+        ssh-keygen -f "$HOME/.ssh/known_hosts" -R "$1"
+    fi
 }
 ################################-
 #- FILE OPERATIONS

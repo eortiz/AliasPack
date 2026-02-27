@@ -264,6 +264,16 @@ didelpat() {
     echo "Usage: didelpat [PATTERN] to delete images by name pattern"
    fi
 }
+drmid() {
+#- Docker remove dangling (untagged) images
+    imgs=$(docker images -q -f dangling=true)
+    if [ -n "$imgs" ]; then
+        echo "Removing dangling images: docker rmi $imgs"
+        docker rmi $imgs
+    else
+        echo "No dangling images found."
+    fi
+}
 
 ################################-
 #- NETWORKS
