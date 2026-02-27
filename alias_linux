@@ -20,7 +20,6 @@ alias enable='echo "Enable service at boot: sudo systemctl enable [SERVICE]";sud
 alias fail='echo "Show failed services: sudo systemctl --failed";sudo systemctl --failed'
 alias journal='echo "Follow service journal: sudo journalctl -fuu [SERVICE]";sudo journalctl -fuu'
 alias status='echo "List all services: systemctl -t service -a";systemctl -t service -a'
-alias statusint='echo "List pylis services: systemctl -t service -a | grep pylis_";systemctl -t service -a | grep pylis_'
 alias hres='echo "Restart Home-Assistant: sudo systemctl restart home-assistant.service";sudo systemctl restart home-assistant.service; systemctl status home-assistant.service'
 
 stop() {
