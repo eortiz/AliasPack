@@ -1,4 +1,4 @@
-# Last modified: 2026-02-27 02:12:09 | Updated: eortiz
+# Last modified: 2026-02-28 12:26:16 | Updated: eortiz
 ################################-
 #- LINUX Aliases
 ################################-
@@ -315,6 +315,11 @@ mip() {
         ip addr show "$iface" | grep "inet\b" | awk '{print $2}' | cut -d/ -f1
     else
         ip addr show | grep "inet\b" | grep -v "127.0.0.1" | awk '{print $2}' | cut -d/ -f1
+    fi
+    # Netbird VPN interface detection (wt0)
+    if ip addr show wt0 >/dev/null 2>&1; then
+        echo "VPN ADDRESS:"
+        ip addr show wt0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1
     fi
     echo "MAC ADDRESS:"
     if [ -n "$iface" ]; then
