@@ -1,4 +1,4 @@
-# Last modified: 2026-02-27 02:11:49 | Updated: eortiz
+# Last modified: 2026-04-09 16:57:24 | Updated: eortiz
 ################################-
 #- GIT Aliases
 ################################-
@@ -17,6 +17,7 @@ alias get='echo "git";git'
 alias gst='echo "Working tree status: git status";git status'
 alias gs='echo "Working tree status: git status";git status'
 alias gss='echo "Working tree status short: git status -s";git status -s'
+alias gtop='git rev-parse --show-toplevel'
 
 ################################-
 #- STAGING (ADD / REMOVE)
