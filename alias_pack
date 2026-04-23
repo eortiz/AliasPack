@@ -71,29 +71,66 @@ if [ -f ~/aliaspak/.env ]; then
   echo "#Loading environment variables from ~/aliaspak/.env"
   source ~/aliaspak/.env
 
+  # Sourcing .env only keeps the *last* ADDITIONAL_ALIASES=; re-read the file and
+  # merge every ADDITIONAL_ALIASES= / export ADDITIONAL_ALIASES= line (in order).
+  _ap_merged=
+  _ap_merged_n=0
+  while IFS= read -r _ap_l || [ -n "$_ap_l" ]; do
+    _ap_l="${_ap_l%$'\r'}"
+    [[ "$_ap_l" =~ ^[[:space:]]*# ]] && continue
+    if [[ ! "$_ap_l" =~ ^[[:space:]]*export[[:space:]]+ADDITIONAL_ALIASES= ]] && \
+       [[ ! "$_ap_l" =~ ^[[:space:]]*ADDITIONAL_ALIASES= ]]; then
+      continue
+    fi
+    _ap_v="${_ap_l#*ADDITIONAL_ALIASES=}"
+    case "$_ap_v" in
+      \"*) _ap_v="${_ap_v#\"}"; _ap_v="${_ap_v%\"}" ;;
+      \'*) _ap_v="${_ap_v#\'}"; _ap_v="${_ap_v%\'}" ;;
+    esac
+    [ -n "$_ap_v" ] || continue
+    if [ -n "$_ap_merged" ]; then
+      _ap_merged="$_ap_merged $_ap_v"
+    else
+      _ap_merged="$_ap_v"
+    fi
+    _ap_merged_n=$((_ap_merged_n + 1))
+  done < ~/aliaspak/.env
+  if [ "$_ap_merged_n" -gt 0 ]; then
+    ADDITIONAL_ALIASES="$_ap_merged"
+  fi
+  unset _ap_merged _ap_merged_n
+
   # Source additional alias files if specified in ADDITIONAL_ALIASES
   if [ -n "$ADDITIONAL_ALIASES" ]; then
     echo "#Loading additional alias files (override mode)"
-    for alias_file in $ADDITIONAL_ALIASES; do
-      # Check if it's an absolute path or relative to ~/aliaspak/
-      if [[ "$alias_file" = /* ]]; then
-        # Absolute path
-        if [ -f "$alias_file" ]; then
-          echo "#Sourcing (override): $alias_file"
-          source "$alias_file"
+    # 1) Newlines/tabs in the value become spaces (multi-line .env).
+    # 2) " ~" is turned into a newline so two ~ paths in one "word" or odd
+    #    separator still become separate entries (e.g. NBSP: not in IFS).
+    # 3) Each line is split on blanks with xargs -n1 (POSIX "blank" delimiters).
+    # 4) awk gsub turns " ~" into newline+"~" so two ~/ paths in one token still split.
+    # Process substitution keeps the while loop in this shell so source works.
+    while IFS= read -r _ap_line || [ -n "$_ap_line" ]; do
+      case "$_ap_line" in *[![:space:]]*) ;; *) continue;; esac
+      while IFS= read -r alias_file; do
+        [ -z "$alias_file" ] && continue
+        # Resolve: absolute, ~/… (home-relative), or relative to ~/aliaspak/
+        resolved=""
+        if [[ "$alias_file" = /* ]]; then
+          resolved="$alias_file"
+        elif [[ "$alias_file" = ~* ]]; then
+          # e.g. ~/plex/mac/alias_macpro — do not prefix with ~/aliaspak/
+          resolved="${alias_file/#\~/$HOME}"
         else
-          echo "#Warning: Additional alias file not found: $alias_file"
+          resolved="$HOME/aliaspak/$alias_file"
         fi
-      else
-        # Relative to ~/aliaspak/
-        if [ -f ~/aliaspak/"$alias_file" ]; then
-          echo "#Sourcing (override): ~/aliaspak/$alias_file"
-          source ~/aliaspak/"$alias_file"
+        if [ -f "$resolved" ]; then
+          echo "#Sourcing (override): $resolved"
+          source "$resolved"
         else
-          echo "#Warning: Additional alias file not found: ~/aliaspak/$alias_file"
+          echo "#Warning: Additional alias file not found: $resolved"
         fi
-      fi
-    done
+      done < <(printf '%s' "$_ap_line" | xargs -n1 2>/dev/null)
+    done < <(printf '%s' "$ADDITIONAL_ALIASES" | tr '\n\t' '  ' | sed 's/  */ /g' | awk '{ gsub(/ ~/,"\n~") } 1')
   fi
 fi
 
