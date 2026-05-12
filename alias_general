@@ -1,4 +1,4 @@
-# Last modified: 2026-02-27 02:11:39 | Updated: eortiz
+# Last modified: 2026-05-12 10:15:56 | Updated: eortiz
 ################################-
 #- GENERAL Aliases (Cross-Platform: macOS + Linux)
 ################################-
@@ -130,3 +130,8 @@ trunc() {
      echo "Usage: trunc [PATH] full path of file (e.g. /var/log/syslog)"
    fi
 }
+
+################################-
+#- GENERAL TOOLS
+################################-
+alias n="nvim"
