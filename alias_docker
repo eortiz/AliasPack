@@ -1,4 +1,4 @@
-# Last modified: 2026-02-27 02:11:18 | Updated: eortiz
+# Last modified: 2026-05-18 19:26:18 | Updated: eortiz
 ################################-
 #- DOCKER Aliases
 ################################-
@@ -229,6 +229,8 @@ drm() {
 #- IMAGES
 ################################-
 alias dpull='echo "Docker pull image: docker pull";docker pull'
+alias dupd='echo "Docker Compose Full Update Image: ";docker compose up --pull always --force-recreate --remove-orphans'
+
 
 dils() {
 #- Docker image list, optionally filter by pattern
